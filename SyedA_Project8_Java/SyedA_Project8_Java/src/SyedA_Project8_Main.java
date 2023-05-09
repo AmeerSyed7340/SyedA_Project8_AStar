@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 class AStarNode{
@@ -24,7 +25,7 @@ class AStarNode{
         //print parents fStar and config
         //Check if parent is null or not
         if(node.parent != null){
-            System.out.print("<" + node.parent.fStar + " [ ");
+            System.out.print("< " + node.parent.fStar + " [ ");
             for(int i = 0; i < node.parent.config.length; i++){
                 System.out.print(node.parent.config[i] + " ");
             }
@@ -33,14 +34,14 @@ class AStarNode{
             System.out.print("< Parent NULL [NO PARENT CONFIG");
         }
 
-        System.out.print("] :: [");
+        System.out.print("] :: ");
 
         //print node's fStar and config
         System.out.print(node.fStar + " [ ");
         for(int i = 0; i < node.config.length; i++){
             System.out.print(node.config[i] + " ");
         }
-        System.out.println("]>");
+        System.out.println("] >");
     }//printNode
 }//AStarNode class
 
@@ -152,9 +153,22 @@ class AStar{
         table[8][8] = 0;
     } //constructor
 
+    //Print 2d table
+    //works
+    public void printTable(){
+        for(int i = 0; i < 9; i ++){
+            for(int j = 0; j < 9; j++){
+                System.out.print(table[i][j] + "\t");
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+    }
+
+    //computerHStar works
     public int computeHStar(int[]nodeConfig, int[] goalConfig){
         //Step 0
-        System.out.println("\nEntering computeHStar method");
+        System.out.println("Entering computeHStar method");
         int sum = 0; //local var
         int i = 0; //local var
 
@@ -182,7 +196,7 @@ class AStar{
             i++;
         }
         //Step 8
-        System.out.println("Leaving computeHStar method: sum = " + sum);
+        System.out.println("Leaving computeHStar method: sum = " + sum + "\n");
 
         //Step 9
         return sum;
@@ -203,14 +217,9 @@ class AStar{
 
         //Step 3
         while(currentNode.config[i] != 0 && i < 9){
-            //test
-            //System.out.println("CurrentNode.config[" +i +"]: " + currentNode.config[i]);
-
             //Step 2
             if(currentNode.config[i] != 0){
                 i++;
-                //test
-                //System.out.println("i: " + i);
             }
         }
 
@@ -235,16 +244,9 @@ class AStar{
                 //set config to currentNode.config
                 int[] newNodeConfig = copyArray(currentNode.config);
                 AStarNode newNode = new AStarNode(newNodeConfig, 999, 999, 999, null, currentNode);
-                //test newNode config
-                //printConfig(newNode.config);
-                //printConfig(currentNode.config);
 
                 newNode.config[j] = 0;
                 newNode.config[zeroPosition] = currentNode.config[j];
-
-                //test config newNode
-                //printConfig(newNode.config);
-                //printConfig(currentNode.config);
 
                 if(!checkAncestors(newNode)){ //if not one of currentNode's ancestors.
                     newNode.next = tmpList.next;
@@ -291,7 +293,7 @@ class AStar{
     }//remove
 
     boolean match(int[]config1, int[]config2){
-        return config1 == config2; //Simplified form of if(config1==config2)
+        return Arrays.equals(config1,config2);
     }//match
 
     boolean checkAncestors(AStarNode child){ //maybe can be used inside printNode to check for parent
@@ -342,8 +344,8 @@ class AStar{
 public class SyedA_Project8_Main {
     public static void main(String[] args) {
         //Step 0
-        File inFile1 = new File("src/Start1.txt");
-        File inFile2 = new File("src/goal1.txt");
+        File inFile1 = new File("SyedA_Project8_Java/src/Start1.txt");
+        File inFile2 = new File("SyedA_Project8_Java/src/Goal1.txt");
         try{
             //Scanners for the 2 input files: Start1 and Start 2
             Scanner sc1 = new Scanner(inFile1);
@@ -363,7 +365,6 @@ public class SyedA_Project8_Main {
                 initIndex++;
             }
 
-
             //integer variable to feed "data" into from inFile2
             int num4Goal;
 
@@ -376,52 +377,45 @@ public class SyedA_Project8_Main {
                 goalIndex++;
             }
 
-            //Set a start node with initConfig read from inFile1 (Start1.txt)
-            int[]startNodeConfig = aStar.copyArray(aStar.initConfig);
-            aStar.startNode = new AStarNode(startNodeConfig,0,9999,9999,null,null);
+            //test
+            System.out.print("initConfig: ");
+            aStar.printConfig(aStar.initConfig);//not spec
+            System.out.print("goalConfig: ");
+            aStar.printConfig(aStar.goalConfig);//not spec
+            System.out.println(); //not spec
 
-            //Set dummy nodes for Open, Close and childList
-            int[]dummy4Open = aStar.copyArray(aStar.dummyConfig);
-            aStar.Open = new AStarNode(dummy4Open, 0,0,0,null,null);
+            //Cannot set startNode's configuration(1d array) to aStar.initConfig bc of pbr
+            //we use copy array for startNode
+            int[] copyInitConfig = aStar.copyArray(aStar.initConfig);
+            aStar.startNode = new AStarNode(copyInitConfig, 0, 9999, 9999, null, null);
 
-            //Close list not being used this project
-            //int[]dummy4Close = aStar.copyArray(aStar.dummyConfig);
-            //aStar.Close = new AStarNode(dummy4Close, 0,0,0,null,null);
+            //use copy array for Open
+            int[]copyDummyOpen = aStar.copyArray(aStar.dummyConfig);
+            aStar.Open = new AStarNode(copyDummyOpen,0,0,0,null,null);
 
-            int[]dummy4childList = aStar.copyArray(aStar.dummyConfig);
-            aStar.childList = new AStarNode(dummy4childList, 0,0,0,null,null);
+            //use copy array for childList
+            int[] copyDummyChildList = aStar.copyArray(aStar.dummyConfig);
+            aStar.childList = new AStarNode(copyDummyChildList, 0,0,0,null,null);
 
             //Step 1
             aStar.startNode.gStar = 0;
-            aStar.startNode.hStar = aStar.computeHStar(aStar.startNode.config, aStar.goalConfig);
+            aStar.startNode.hStar = aStar.computeHStar(aStar.startNode.config, aStar.goalConfig); //computeHStar works successfully
             aStar.startNode.fStar = aStar.startNode.gStar + aStar.startNode.hStar;
             aStar.OpenInsert(aStar.startNode);
 
-            //Test
-            /*AStarNode temp = aStar.Open;
-            while(temp != null){
-                System.out.println(temp.gStar + ", " + temp.hStar + ", " + temp.fStar);
-                temp = temp.next;
-            }*/
-
-            //Step 2 - initialize
-            //currentNode is a local variable
+            //Step 2
+            //currentNode is local to main
             AStarNode currentNode = aStar.remove(aStar.Open);
+
             //Step 10
-            while(currentNode != null || aStar.Open.next != null){
-
-                //Step 2 - after initialization
-                //SHOULD BE A DEBUG STATEMENT
-                System.out.println("\nThis is the currentNode:");
-                currentNode.printNode(currentNode);
-
-                //test config
-                //System.out.println("Printing configs of current and goal");
-                //aStar.printConfig(currentNode.config);
-                //aStar.printConfig(aStar.goalConfig);
+            while(!aStar.match(currentNode.config, aStar.goalConfig) || aStar.Open.next != null){
+                if(currentNode!= null){
+                    System.out.println("This is currentNode: ");
+                    currentNode.printNode(currentNode);
+                }
 
                 //Step 3
-                if(currentNode != null && aStar.match(currentNode.config, aStar.goalConfig)){
+                if(currentNode!=null && aStar.match(currentNode.config, aStar.goalConfig)){ //found solution
                     System.out.println("A solution is found!!");
                     aStar.printSolution();
                     System.exit(0);
@@ -429,46 +423,39 @@ public class SyedA_Project8_Main {
 
                 //Step 4
                 aStar.childList = aStar.expandChildList(currentNode);
-                //test
-                System.out.println("\nPrinting childList");
-                aStar.childList.printNode(aStar.childList);
 
-                //Step 5 - initialize
+                //Step 5
                 AStarNode child = aStar.remove(aStar.childList);
+                System.out.println("\nIn main(), remove node from childList and printing");
+
                 //Step 8
+                //This while loop works - no need to change it
                 while(child != null){
-                    //Step5 - After initialization
-                    //DEBUG
-                    System.out.println("In main(), remove node from childList and printing");
                     child.printNode(child);
 
                     //Step 6
-                    child.gStar = currentNode.gStar+1;
+                    child.gStar = currentNode.gStar;
                     child.hStar = aStar.computeHStar(child.config, aStar.goalConfig);
                     child.fStar = child.gStar + child.hStar;
-                    child.parent = currentNode; //back pointer
+                    child.parent = currentNode;
 
                     //Step 7
                     aStar.OpenInsert(child);
 
-                    //Step 9
-                    //OUTFILE
-                    System.out.println("Below is Open List");
-                    aStar.printList(aStar.Open);
-
-                    child = aStar.remove(aStar.childList);//to ensure loop ends
+                    //child Updated to end loop
+                    child = aStar.remove(aStar.childList);
                 }
 
-                currentNode = aStar.remove(aStar.Open); // ensure loop ends
+                //Step 9
+                System.out.println("Below is Open list: ");
+                aStar.printList(aStar.Open);
+                currentNode = aStar.remove(aStar.Open);
             }
-
 
             //Step 11
-            if(aStar.Open.next == null && currentNode.config != aStar.goalConfig){
-                //OUTFILE
-                System.out.println("Message: no solution can be found in the search!");
+            if(aStar.Open.next == null && !aStar.match(currentNode.config, aStar.goalConfig)){
+                System.out.println("*** Message: no solution can be found in the search!");
             }
-
 
             //Step 12
             //close Scanners
