@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -346,7 +348,14 @@ public class SyedA_Project8_Main {
         //Step 0
         File inFile1 = new File("SyedA_Project8_Java/src/Start1.txt");
         File inFile2 = new File("SyedA_Project8_Java/src/Goal1.txt");
+        File outFile1 = new File("outFile1.txt");
+        File outFile2 = new File("outFile2.txt");
+        File debugFile = new File("debugFile.txt");
         try{
+            //FileWriters for outFile1, outFile2, debugFile
+            FileWriter outFile1FW = new FileWriter(outFile1);
+            FileWriter outFile2FW = new FileWriter(outFile2);
+            FileWriter debugFileFW = new FileWriter(debugFile);
             //Scanners for the 2 input files: Start1 and Start 2
             Scanner sc1 = new Scanner(inFile1);
             Scanner sc2 = new Scanner(inFile2);
@@ -462,6 +471,8 @@ public class SyedA_Project8_Main {
             sc1.close();
             sc2.close();
         }catch (FileNotFoundException e){
+            System.out.println(e);
+        }catch (IOException e){
             System.out.println(e);
         }
     }
